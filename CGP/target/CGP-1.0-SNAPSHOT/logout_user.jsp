@@ -2,10 +2,6 @@
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.io.IOException"%>
-<%@page import="javax.servlet.ServletException"%>
-<%@page import="javax.servlet.http.HttpServlet"%>
-<%@page import="javax.servlet.http.HttpServletRequest"%>
-<%@page import="javax.servlet.http.HttpServletResponse"%>
 
 <!DOCTYPE html>
 <html lang="en">

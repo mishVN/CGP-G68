@@ -455,11 +455,11 @@
             <div class="sidebar" id="sidebar">
                 
                 <a href="cart.jsp">View Cart</a>
-                <a href="setting_seller.jsp">Items management</a>
+                <a href="seller_item.jsp">Items management</a>
                 <a href="game2.jsp">Game</a>
-                <a href="setting.jsp">Setting</a>
+                <a href="setting_seller.jsp">Setting</a>
                 <a href="login.jsp">Login</a>
-                <a href="login.jsp">Logout</a>
+                <a href="logout_user.jsp">Logout</a>
                 
 
             </div>

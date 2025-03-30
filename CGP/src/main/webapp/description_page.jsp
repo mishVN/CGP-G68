@@ -39,7 +39,7 @@
             stmt.close();
 
             // Fetch current username from temp_login table
-            stmt = conn.prepareStatement("SELECT username FROM temp_login");
+            stmt = conn.prepareStatement("SELECT username FROM temp_login_shop");
             rs = stmt.executeQuery();
             if (rs.next()) {
                 currentUsername = rs.getString("username");
