@@ -192,6 +192,7 @@ h2, h3 {
             <li><a href="viewpayments.jsp">Payments</a></li>
             <li><a href="admin_customers.jsp">Customers</a></li>
             <li><a href="admin_shop.jsp">Sellers</a></li>
+            <li><a href="delevery_boys.jsp">Delevery Boy List</a></li>
             <li><a href="admin_itemmanagement.jsp">Item Management</a></li>
         </ul>
     </div>
