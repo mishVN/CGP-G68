@@ -1,46 +1,66 @@
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.ResultSet"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="dbConnection.jsp" %>
 
+<%@ page import="java.sql.*" %>
 <%
+    // DB connection variables
+    String dbURL = "jdbc:mysql://localhost:3306/cgp";
+    String dbUser = "root";
+    String dbPass = "3323";
+
+    Connection conn = null;
     int totalOrders = 0;
     int deliveredOrders = 0;
     int pendingOrders = 0;
-    ResultSet finishedRs = null; // Declare it here
+    ResultSet finishedRs = null;
 
     try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(dbURL, dbUser, dbPass);
+
         // Count Total Orders
-        String totalQuery = "SELECT COUNT(*) FROM order_table"; 
+        String totalQuery = "SELECT COUNT(*) FROM oders"; 
         PreparedStatement totalStmt = conn.prepareStatement(totalQuery);
         ResultSet totalRs = totalStmt.executeQuery();
         if (totalRs.next()) {
             totalOrders = totalRs.getInt(1);
         }
+        totalRs.close();
+        totalStmt.close();
 
         // Count Delivered Orders
-        String deliveredQuery = "SELECT COUNT(*) FROM order_table WHERE status='finished'";
+        String deliveredQuery = "SELECT COUNT(*) FROM oders WHERE status='finished'";
         PreparedStatement deliveredStmt = conn.prepareStatement(deliveredQuery);
         ResultSet deliveredRs = deliveredStmt.executeQuery();
         if (deliveredRs.next()) {
             deliveredOrders = deliveredRs.getInt(1);
         }
+        deliveredRs.close();
+        deliveredStmt.close();
 
         // Count Pending Orders
-        String pendingQuery = "SELECT COUNT(*) FROM order_table WHERE status='pending'";
+        String pendingQuery = "SELECT COUNT(*) FROM oders WHERE status='pending'";
         PreparedStatement pendingStmt = conn.prepareStatement(pendingQuery);
         ResultSet pendingRs = pendingStmt.executeQuery();
         if (pendingRs.next()) {
             pendingOrders = pendingRs.getInt(1);
         }
+        pendingRs.close();
+        pendingStmt.close();
 
         // Fetch Last 20 Finished Orders
-        String finishedQuery = "SELECT oder_id, full_name, total, delivery_method FROM order_table WHERE status='finished' ORDER BY oder_id DESC LIMIT 20";
+        String finishedQuery = "SELECT oder_id, full_name, total, delivery_method FROM oders WHERE status='finished' ORDER BY oder_id DESC LIMIT 20";
         PreparedStatement finishedStmt = conn.prepareStatement(finishedQuery);
-        finishedRs = finishedStmt.executeQuery(); // Assign result to the declared variable
+        finishedRs = finishedStmt.executeQuery(); // Keep it open for later use in HTML
 
     } catch (Exception e) {
         e.printStackTrace();
     }
 %>
+
 
 
 <!DOCTYPE html>
@@ -67,6 +87,7 @@
         opacity: 0;
         transform: translateY(20px);
         animation: fadeIn 1s ease-out forwards;
+        margin: 20px;
     }
 
     .adminpanle {
@@ -105,7 +126,7 @@
     .main-content {
         margin-left: 250px;
         flex: 1;
-        padding: 0; /* Removed extra padding */
+        padding: 20px; 
         opacity: 0;
         transform: translateY(20px);
         animation: fadeIn 1s ease-out forwards;
