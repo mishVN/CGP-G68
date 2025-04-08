@@ -10,11 +10,7 @@
     Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
     int totalPrice = 0;
 
-    if (cart == null || cart.isEmpty()) {
-        response.sendRedirect("cart.jsp"); // Redirect to cart if empty
-        return; // Stop execution to prevent further errors
-    }
-
+   
     // Declare connection once
     Connection conn = null;
     PreparedStatement stmt = null;
