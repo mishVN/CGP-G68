@@ -87,18 +87,20 @@
         <a href="change_password_seller.jsp"><div class="service">
          <img src="https://www.shutterstock.com/image-vector/change-password-vector-iconlock-reload-600nw-2283380015.jpg" alt="Service Logo 1">
             <h3>Change Password</h3>
-            <p></p>
             </div></a>
-        <div class="service">
-            <img src="download.png" alt="Service Logo 2">
-            <h3>Sample 2</h3>
-            <p>Details about Sample 2</p>
-        </div>
-        <div class="service">
-            <img src="download.png" alt="Service Logo 3">
-            <h3>Sample 3</h3>
-            <p>Details about Sample 3</p>
-        </div>
+        
+        
+            <a href="customer_support.jsp"><div class="service">
+            <img src="https://cdn-icons-png.freepik.com/256/8781/8781830.png?semt=ais_hybrid" alt="Service Logo 2">
+            <h3>Customer Support</h3>
+                </div></a>
+            
+        <a href="find_delivery_contact.jsp"><div class="service">
+            <img src="https://i.pinimg.com/736x/fc/27/fb/fc27fb81e77cc56ba4ed981d7801ceb9.jpg" alt="Service Logo 2">
+            <h3>Contact Delivery Boy</h3>
+                </div></a>
+        
+        
         <div class="service">
             <img src="download.png" alt="Service Logo 4">
             <h3>Sample 4</h3>

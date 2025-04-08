@@ -115,6 +115,7 @@
             <li><a href="viewpayments.jsp">Payments</a></li>
             <li><a href="admin_customers.jsp">Customers</a></li>
             <li><a href="admin_shop.jsp">Sellers</a></li>
+            <li><a href="delevery_boys.jsp">Delivery Boy List</a></li>
             <li><a href="admin_itemmanagement.jsp">Item Management</a></li>
         </ul>
     </div>
@@ -132,6 +133,7 @@
                     <th>Contact</th>
                     <th>Address</th>
                     <th>Status</th>
+                    <th>View Oder</th>
                     <th>Update</th>
                 </tr>
                 <% 
@@ -149,6 +151,18 @@
                     <td><%= rs.getString("customer_contact") %></td>
                     <td><%= rs.getString("customer_address") %></td>
                     <td><%= rs.getString("status") %></td>
+                    <td>
+                       <%
+    int orderId = rs.getInt("oder_id");
+    int customerId = rs.getInt("customer_id");
+    String customerAddress = rs.getString("customer_address");
+%>
+<button class="buttontableupdate"
+        onclick="location.href='viewoderdetails.jsp?order_id=<%= orderId %>&customer_id=<%= customerId %>&customer_address=<%= java.net.URLEncoder.encode(customerAddress, "UTF-8") %>'">
+    View
+</button>
+
+                    </td>
                     <td><button class="buttontableupdate" onclick="tableupdate(this, <%= rs.getInt("oder_id") %>)">Packed</button></td>
                 </tr>
                 <% 
