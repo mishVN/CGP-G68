@@ -174,6 +174,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding-top: 25px;
         }
 
         .left, .right {
@@ -458,6 +459,47 @@
         if (conn != null) conn.close();
     }
 %>
+ 
+<%
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        // Parse the totalPrice parameter to an integer
+        String totalPriceStr = request.getParameter("totalPrice");
+        int amount = 0;  // Default value in case parsing fails
+
+        if (totalPriceStr != null && !totalPriceStr.isEmpty()) {
+            try {
+                amount = Integer.parseInt(totalPriceStr); // Convert string to integer
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                out.println("<script>alert('Invalid total price!');</script>");
+            }
+        }
+
+        // If amount is valid, proceed with database insertion
+        if (amount > 0) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+
+                PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO payment (amount, payment_method) VALUES (?, 'cashondelivery')"
+                );
+                ps.setInt(1, amount); // Set the amount in the query
+                ps.executeUpdate();
+                ps.close();
+                conn.close();
+
+                out.println("<script>alert('Payment saved successfully!');</script>");
+            } catch (Exception e) {
+                e.printStackTrace();
+                out.println("<script>alert('Error saving payment!');</script>");
+            }
+        } else {
+            out.println("<script>alert('Invalid amount!');</script>");
+        }
+    }
+%>
+
         </div>
         <h3 class="order-total" id="order-total">Subtotal: Rs. <%= totalPrice %></h3>
     </div>
@@ -465,7 +507,7 @@
     <!-- Right Side: Order Form -->
     <div class="right">
         <h2>Delivery Details</h2>
-        <form id="order-form" action="Payment.jsp" method="post">
+        <form id="order-form"  method="post">
             <div class="form-group">
                 <label for="full-name">Full Name:</label>
                 <input type="text" id="full-name" name="full-name" required>
@@ -554,14 +596,16 @@
             </div>
 
             <div class="order-actions">
-                <button type="button" class="btn btn-place" onclick="location.href='Payment.jsp'">Pay Card</button>
-                <button type="button" class="btn btn-place" onclick="cashondelivery()">Cash on Delivery</button>
+                <button type="button" class="btn btn-place" onclick="location.href='Payment.jsp?total=<%= totalPrice %>'">Pay Card</button>
+                <button type="submit">Cash On Delivery</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    let subtotal = <%= totalPrice %>;
+
     function calculateDeliveryCost() {
         const deliveryCosts = {
             "Ampara": 700,
@@ -591,12 +635,18 @@
             "Kalutara": 360
         };
 
+        const district = document.getElementById("district").value;
+        const deliveryCost = deliveryCosts[district] || 0;
+
+        document.getElementById("costValue").textContent = Rs. ${deliveryCost};
+        document.getElementById("totalCostValue").textContent = Rs. ${subtotal + deliveryCost};
+    }
+
       let district = document.getElementById("district").value;
 let costValue = document.getElementById("costValue");
 let totalCostValue = document.getElementById("totalCostValue");
 let orderTotal2 = document.getElementById("order-total2");
-
-let subtotal = <%= totalPrice %>; // Subtotal from the cart
+ // Subtotal from the cart
 let deliveryCost = 0; // Initialize delivery cost
 let totalCost = subtotal; // Initialize total cost with subtotal
 
@@ -607,14 +657,14 @@ if (district && deliveryCosts[district] !== undefined) {
     totalCost = subtotal + deliveryCost;
 
     // Update the displayed values
-    costValue.innerHTML = `Rs. ${deliveryCost}`;
-    totalCostValue.innerHTML = `Rs. ${totalCost}`;
-    orderTotal2.innerHTML = `Total: Rs. ${totalCost}`;
+    costValue.innerHTML = Rs. ${deliveryCost};
+    totalCostValue.innerHTML = Rs. ${totalCost};
+    totalCostValue.innerHTML = Total: Rs. ${finalTotal};
 } else {
     // If no district is selected or delivery cost is not defined
     costValue.innerHTML = "N/A";
-    totalCostValue.innerHTML = `Rs. ${subtotal}`; // Display subtotal as total cost
-    orderTotal2.innerHTML = `Total: Rs. ${subtotal}`;
+    totalCostValue.innerHTML = Rs. ${subtotal}; // Display subtotal as total cost
+    totalCostValue.innerHTML = Total: Rs. ${subtotal};
 }
     }
 
