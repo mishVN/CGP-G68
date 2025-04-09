@@ -693,10 +693,10 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p>Courier Service Name</p>
-                <p>23/A, Jaya Mawatha, Rathnapura</p>
-                <p><a href="mailto:curierservice@gmail.com">curierservice@gmail.com</a></p>
-                <p><a href="tel:0761214345">0761214345</a></p>
+                <p>Snappy Drop</p>
+                <p>23/A, Main Street, Colombo</p>
+                <p><a href="www.snappydrop066@gmail.com">snappydrop066@gmail.com</a></p>
+                <p><a href="tel:076121434">076121434</a></p><p><a href="tel:077537108">077537108</a></p>
             </div>
 
   

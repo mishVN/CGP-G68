@@ -199,9 +199,12 @@
             <li><a href="ondelivery.jsp">On Delivery</a></li>
             <li><a href="finished_oder.jsp">Finished Orders</a></li>
             <li><a href="viewpayments.jsp">Payments</a></li>
+            <li><a href="admin_livechat.jsp">Live Chat</a></li>
+            <li><a href="delevery_boys.jsp">Delivery Boys</a></li>
             <li><a href="admin_customers.jsp">Customers</a></li>
             <li><a href="admin_shop.jsp">Sellers</a></li>
             <li><a href="admin_itemmanagement.jsp">Item Management</a></li>
+            <li><a href="admin_report.jsp">Reports</a></li>
         </ul>
     </div>
     <div class="main-content">

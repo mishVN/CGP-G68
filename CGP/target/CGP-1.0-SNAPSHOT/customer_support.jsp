@@ -175,8 +175,8 @@
 
         <div class="support-section">
             <h3 class="section-title">Contact Us</h3>
-            <p><strong>Live Chat:</strong> <a href="#">Start a chat</a></p>
-            <p><strong>Email:</strong> <a href="mailto:support@courierservice.com">support@courierservice.com</a></p>
+            <p><strong>Live Chat:</strong> <a href="livechat.jsp">Start a chat</a></p>
+            <p><strong>Email:</strong> <a href="snappydrop066@gmail.com">support@courierservice.com</a></p>
             <p><strong>Phone:</strong> <a href="tel:+12345678900">+1-234-567-8900</a></p>
         </div>
 

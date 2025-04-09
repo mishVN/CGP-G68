@@ -422,10 +422,50 @@
     .w3-button w3-black w3-display-left:hover{
         color:#ccc ;
         background-color: #d6e93a    }
+    
+    .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 10px;
+            background: #ff6600;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            width: 30px;
+            height: 30px
+        }
+        .cart-icon:hover {
+            transform: scale(1.5);
+        }
+        .cart-popup {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            background: white;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .show {
+            display: block;
+        }
             
         </style>
         </head>
         <body>
+            
+            <script>
+        function toggleCart() {
+            document.getElementById('cart-popup').classList.toggle('show');
+        }
+    </script>
+    
 
             <!-- Navigation Bar -->
             <div class="navbar">
@@ -459,7 +499,7 @@
                 <a href="game2.jsp">Game</a>
                 <a href="setting_seller.jsp">Setting</a>
                 <a href="login.jsp">Login</a>
-                <a href="logout_user.jsp">Logout</a>
+                <a href="logout_shop.jsp">Logout</a>
                 
 
             </div>
@@ -656,10 +696,10 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p>Courier Service Name</p>
-                <p>23/A, Jaya Mawatha, Rathnapura</p>
-                <p><a href="mailto:curierservice@gmail.com">curierservice@gmail.com</a></p>
-                <p><a href="tel:0761214345">0761214345</a></p>
+                <p>Snappy Drop</p>
+                <p>23/A, Main Street, Colombo</p>
+                <p><a href="www.snappydrop066@gmail.com">snappydrop066@gmail.com</a></p>
+                <p><a href="tel:076121434">076121434</a></p><p><a href="tel:077537108">077537108</a></p>
             </div>
 
   
@@ -681,5 +721,11 @@
                 });
 
             </script>
+            <div class="cart-icon" onclick="toggleCart()">
+       <a href="cart.jsp"> 🛒</a>
+        <div id="cart-popup" class="cart-popup">
+            
+        </div>
+           
         </body>
         </html>

@@ -93,7 +93,7 @@
         }
 
         // Forward request back to JSP page
-        request.getRequestDispatcher("logout_user").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 %>
 
