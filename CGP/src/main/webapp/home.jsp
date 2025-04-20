@@ -479,11 +479,12 @@
             <a href="login.jsp">Login</a>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button class="search-button" onclick="performSearch()"></button>
-        </div>
+       <!-- Search Bar -->
+<form method="get" action="home.jsp" class="search-container">
+    <input type="text" name="search" id="searchInput" placeholder="Search..." value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+    <button class="search-button" type="submit">Search</button>
+</form>
+
        
     </div>
 
