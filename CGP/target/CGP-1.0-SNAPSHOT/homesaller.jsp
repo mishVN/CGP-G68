@@ -442,11 +442,12 @@
             <a href="login.jsp">Login</a>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button class="search-button" onclick="performSearch()"></button>
-        </div>
+       <!-- Search Bar -->
+<form method="get" action="home.jsp" class="search-container">
+    <input type="text" name="search" id="searchInput" placeholder="Search..." value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+    <button class="search-button" type="submit">Search</button>
+</form>
+
        
     </div>
 
@@ -575,38 +576,50 @@
             <!-- Items Container -->
             <div class="items-container" id="itemsContainer">
                 <%
-                    conn = null;
-                    stmt = null;
-                    rs = null;
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-                        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery("SELECT * FROM items");
+        conn = null;
+        stmt = null;
+        rs = null;
+        String searchTerm = request.getParameter("search");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+            stmt = conn.createStatement();
+            String sql;
 
-                        while (rs.next()) {
-                            int itemcode = rs.getInt("item_code");
-                            String itemCategory = rs.getString("category");
-                            String itemName = rs.getString("item_name");
-                            String itemDescription = rs.getString("item_description");
-                            String itemImage = rs.getString("img_url");
-                %>
-                            <div class="item-card" data-category="<%= itemCategory %>">
-                                <img src="<%= itemImage %>" alt="<%= itemName %>">
-                                <h3><%= itemName %></h3>
-                                <p><%= itemDescription %></p>
-                                 <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
-                            </div>
-                <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (rs != null) rs.close();
-                        if (stmt != null) stmt.close();
-                        if (conn != null) conn.close();
-                    }
-                %>
+            if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+                sql = "SELECT * FROM items WHERE item_name LIKE '%" + searchTerm + "%' OR item_description LIKE '%" + searchTerm + "%'";
+            } else {
+                sql = "SELECT * FROM items";
+            }
+
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int itemcode = rs.getInt("item_code");
+                String itemCategory = rs.getString("category");
+                String itemName = rs.getString("item_name");
+                String itemDescription = rs.getString("item_description");
+                String itemImage = rs.getString("img_url");
+    %>
+                <div class="item-card" data-category="<%= itemCategory %>">
+                    <img src="<%= itemImage %>" alt="<%= itemName %>">
+                    <h3><%= itemName %></h3>
+                    <p><%= itemDescription %></p>
+                    <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
+                </div>
+    <%
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+    %>
+            <p>Error loading items!</p>
+    <%
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+    %>
             </div>
         </div>
 
