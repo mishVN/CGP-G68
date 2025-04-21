@@ -1,16 +1,10 @@
-<%@page import="java.sql.DriverManager"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
-<%@page import="java.sql.Connection"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Courier Service</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
+    <title>Admin - Customer Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,16 +14,7 @@
             height: 100vh;
             display: flex;
         }
-        
-        h2 { 
-           color: #333; 
-           text-align: center;
-         }
-        
-        .adminpanle{
-            text-align: center;
-        }
-        
+
         .sidebar {
             width: 250px;
             background: #333;
@@ -38,132 +23,133 @@
             padding-top: 20px;
             position: fixed;
         }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
         .sidebar ul {
             list-style: none;
             padding: 0;
-            
         }
+
         .sidebar ul li {
-            padding: 25px;
+            padding: 15px;
             text-align: center;
-            
         }
+
         .sidebar ul li a {
             color: white;
             text-decoration: none;
             font-weight: bold;
-            display: block;
         }
+
         .sidebar ul li a:hover {
             background: #007bff;
-            padding: 25px;
+            display: block;
             border-radius: 10px;
         }
+
         .main-content {
             margin-left: 250px;
-            flex: 1;
             padding: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 1s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .dashboard {
-            display: flex;
-            flex-direction: row;
-            
-            justify-content: center;
-            gap: 10px;
+            flex: 1;
+            overflow-y: auto;
             width: 100%;
         }
-        
-        .stat-box {
-            background: #007bff;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+
+        h2 {
             text-align: center;
-            width: 30%;
-            min-width: 150px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease-in-out;
+            color: #333;
         }
-        .stat-box:hover {
-            transform: scale(1.05);
-        }
-        .stat-box h2 {
-            margin: 0 0 10px;
-        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: center;
-            border-color: #fff;
         }
-        td{
-            background-color: #f1f1f1;
-        }
+
         th {
-            background: #007bff;
-            color: #fff;
+            background-color: #007bff;
+            color: white;
         }
+
         tr:hover {
-            background: #f1f1f1;
-            transition: background 0.3s ease-in-out;
-        }
-        .main{
-            margin: 10px;
-            padding: 20px;
             background-color: #f1f1f1;
-            border-radius: 10px;
-            
+        }
+
+        button {
+            background-color: red;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkred;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2  class="adminpanle">Admin Panel</h2>
-        <ul>
-           <li><a href="admin_home.jsp">Dashboard</a></li>
-            <li><a href="admin_oderdetails.jsp">Orders</a></li>
-            <li><a href="packedoder.jsp">Packed Oder</a></li>
-            <li><a href="ondelivery.jsp">On Delivery</a></li>
-            <li><a href="finished_oder.jsp">Finished Orders</a></li>
-            <li><a href="viewpayments.jsp">Payments</a></li>
-            <li><a href="admin_customers.jsp">Customers</a></li>
-            <li><a href="admin_shop.jsp">Sellers</a></li>
-            <li><a href="delevery_boys.jsp">Delevery Boy List</a></li>
-            <li><a href="admin_itemmanagement.jsp">Item Management</a></li>
-        </ul>
-    </div>
-    
-    <div class="main-content">
-        <div class="main">
-        <h2>Customer Management</h2>
 
-    <h2>Customer List</h2>
+<%
+    // Handle suspend request (before displaying users)
+    String suspendUserId = request.getParameter("suspendId");
+    if (suspendUserId != null) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+            stmt = conn.prepareStatement("UPDATE user_account SET status = 'Suspended' WHERE user_id = ?");
+            stmt.setInt(1, Integer.parseInt(suspendUserId));
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            out.println("<script>alert('Error suspending user: " + e.getMessage() + "');</script>");
+        } finally {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+    }
+%>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+        <li><a href="admin_home.jsp">Dashboard</a></li>
+        <li><a href="admin_oderdetails.jsp">Orders</a></li>
+        <li><a href="packedoder.jsp">Packed Order</a></li>
+        <li><a href="ondelivery.jsp">On Delivery</a></li>
+        <li><a href="finished_oder.jsp">Finished Orders</a></li>
+        <li><a href="viewpayments.jsp">Payments</a></li>
+        <li><a href="admin_livechat.jsp">Live Chat</a></li>
+        <li><a href="delevery_boys.jsp">Delivery Boys</a></li>
+        <li><a href="admin_customers.jsp">Customers</a></li>
+        <li><a href="admin_shop.jsp">Sellers</a></li>
+        <li><a href="admin_itemmanagement.jsp">Item Management</a></li>
+        <li><a href="admin_report.jsp">Reports</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <h2>Customer Management</h2>
     <table>
         <tr>
             <th>Customer ID</th>
             <th>Name</th>
-            <th>E Mail</th>
+            <th>Email</th>
             <th>Address</th>
-            <th>Contact Number</th>
+            <th>Phone Number</th>
+            <th>Status</th>
+            <th>Action</th>
         </tr>
         <%
             Connection conn = null;
@@ -174,15 +160,32 @@
                 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery("SELECT * FROM user_account");
+
                 while (rs.next()) {
+                    int id = rs.getInt("user_id");
+                    String name = rs.getString("user_name");
+                    String email = rs.getString("email");
+                    String address = rs.getString("user_address");
+                    String phone = rs.getString("user_phonenumber");
+                    String status = rs.getString("status");
         %>
         <tr>
-            <td><%= rs.getInt("user_id") %></td>
-            <td><%= rs.getString("user_name") %></td>
-            <td><%= rs.getString("email") %></td>
-            <td><%= rs.getString("user_address") %></td>
-            <td><%= rs.getString("user_phonenumber") %></td>
-            
+            <td><%= id %></td>
+            <td><%= name %></td>
+            <td><%= email %></td>
+            <td><%= address %></td>
+            <td><%= phone %></td>
+            <td><%= status %></td>
+            <td>
+                <% if (!"Suspended".equalsIgnoreCase(status)) { %>
+                    <form method="post" style="margin: 0;">
+                        <input type="hidden" name="suspendId" value="<%= id %>">
+                        <button type="submit" onclick="return confirm('Suspend user <%= name %>?')">Suspend</button>
+                    </form>
+                <% } else { %>
+                    Suspended
+                <% } %>
+            </td>
         </tr>
         <%
                 }
@@ -195,8 +198,7 @@
             }
         %>
     </table>
-        
-    </div>
-    </div>
+</div>
+
 </body>
 </html>

@@ -1,35 +1,62 @@
+<%@page import="java.sql.*"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        String card_owner = request.getParameter("holder-name");
+        String card_number = request.getParameter("card-number");
+        int total =0;
+
+        try {
+           total = Integer.parseInt(request.getParameter("total"));
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+
+            PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO payment (amount, card_number, card_owner, payment_method) VALUES (?, ?, ?, 'card')"
+            );
+            ps.setInt(1, total);
+            ps.setString(2, card_number);
+            ps.setString(3, card_owner);
+            ps.executeUpdate();
+            ps.close();
+            conn.close();
+
+            out.println("<script>alert('Payment saved successfully!');</script>");
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.println("<script>alert('Error saving payment!');</script>");
+        }
+    }
+%>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Form</title>
-    <script src="https://js.stripe.com/v3/"></script>
+    <title>Simple Payment Form</title>
     <style>
         body {
-            background-color: white; /* White background for the page */
+            background-color: white;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            position: relative;
-        }
-
-        h2 {
-            color: green; /* Green color for the "Payment Form" header */
-            font-size: 24px;
-            margin-bottom: 20px;
         }
 
         #payment-form {
-            background-color: #f9f9f9; /* Light background for the form */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Form width */
-            position: relative;
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: green;
         }
 
         .input-container {
@@ -38,184 +65,61 @@
 
         .input-container label {
             font-size: 14px;
-            color: #333;
+            display: block;
             margin-bottom: 5px;
         }
 
         .input-container input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        #card-element {
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        #card-errors {
-            color: red;
-            font-size: 12px;
-            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
-            background-color: green; /* Green button */
-            color: white;
-            padding: 10px;
             width: 100%;
+            padding: 10px;
+            background-color: green;
+            color: white;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 5px;
             font-size: 16px;
-            margin-top: 10px;
-        }
-
-        button:disabled {
-            background-color: #ddd; /* Light gray for disabled button */
-            cursor: not-allowed;
+            cursor: pointer;
         }
 
         button:hover {
-            background-color: darkgreen; /* Darker green on hover */
-        }
-
-        /* Logo positioning side by side */
-        .logo-container {
-            display: flex;
-            justify-content: center;  /* Center logos horizontally */
-            gap: 20px; /* Space between the logos */
-            margin-bottom: 15px; /* Add space between logos and the card input */
-        }
-
-        .card-logo {
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
+            background-color: darkgreen;
         }
     </style>
 </head>
 <body>
 
-    <div>
+    <form id="payment-form" method="post">
         <h2>Payment Form</h2>
 
-        <form id="payment-form">
-            
-            <!-- Card type selection (Visa/MasterCard) side by side -->
-            <div class="logo-container">
-                <img src="/download.png" alt="Visa Logo" class="card-logo" id="visa-logo" data-card-type="visa">
-                <img src="/download (1).png" alt="MasterCard Logo" class="card-logo" id="mastercard-logo" data-card-type="mastercard">
-            </div>
-            
-            <!-- Card number field -->
-            <div class="input-container">
-                <label for="card-element">Card Number</label>
-                <div id="card-element">
-                    <!-- A Stripe Element will be inserted here. -->
-                </div>
-            </div>
-            
-            <!-- Card holder's name field -->
-            <div class="input-container">
-                <label for="holder-name">Card Holder's Name</label>
-                <input type="text" id="holder-name" placeholder="Enter card holder's name" required>
-            </div>
-            
-            <!-- Used to display form errors. -->
-            <div id="card-errors" role="alert"></div>
-
-            <button type="submit" id="submit">Pay Now</button>
-        </form>
-    </div>
-
-    <script>
-        // Set your publishable key from Stripe
-        const stripe = Stripe('your-publishable-key-here'); // Replace with your actual publishable key
-        const elements = stripe.elements();
-        const cardElement = elements.create('card');
+        <div class="input-container">
+            <label for="holder-name">Card Holder's Name</label>
+            <input type="text" id="holder-name" name="holder-name" placeholder="Owner name"  required>
+        </div>
         
-        // Mount the Card element to the DOM
-        cardElement.mount('#card-element');
-
-        const form = document.getElementById('payment-form');
-        const submitButton = document.getElementById('submit');
-        const cardErrors = document.getElementById('card-errors');
-        const holderNameInput = document.getElementById('holder-name');
-        const visaLogo = document.getElementById('visa-logo');
-        const mastercardLogo = document.getElementById('mastercard-logo');
+        <div class="input-container">
+            <label for="card-number">CVC</label>
+            <input type="text" id="cvc" name="cvc" placeholder="***" required>
+        </div>
         
-        let selectedCardType = 'visa'; // Default to Visa
+        <div class="input-container">
+            <label for="card-number">EXP Date</label>
+            <input type="text" id="expdate" name="expdate" placeholder="dd/mm" required>
+        </div>
 
-        // Event listener to select card type
-        visaLogo.addEventListener('click', () => {
-            selectedCardType = 'visa';
-            updateCardTypeSelection();
-        });
+        <div class="input-container">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" name="card-number" placeholder="Card Number" required>
+        </div>
 
-        mastercardLogo.addEventListener('click', () => {
-            selectedCardType = 'mastercard';
-            updateCardTypeSelection();
-        });
 
-        // Function to update card type visual feedback
-        function updateCardTypeSelection() {
-            if (selectedCardType === 'visa') {
-                visaLogo.style.border = '2px solid green';
-                mastercardLogo.style.border = '';
-            } else {
-                mastercardLogo.style.border = '2px solid green';
-                visaLogo.style.border = '';
-            }
-        }
+        <button type="submit">Pay Now</button>
+    </form>
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
-            // Disable the submit button to prevent multiple clicks
-            submitButton.disabled = true;
-
-            // Create a payment method using the card details
-            const {token, error} = await stripe.createToken(cardElement);
-
-            if (error) {
-                cardErrors.textContent = error.message;
-                submitButton.disabled = false; // Re-enable the submit button
-            } else {
-                // Send the token to your server for further processing
-                fetch('/process-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        token: token.id,
-                        cardholder_name: holderNameInput.value, // Send cardholder's name to the server
-                        card_type: selectedCardType // Send selected card type to the server
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        alert('Payment Successful!');
-                    } else {
-                        alert('Payment Failed!');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert('An error occurred, please try again.');
-                })
-                .finally(() => {
-                    submitButton.disabled = false; // Re-enable the submit button
-                });
-            }
-        });
-    </script>
 </body>
 </html>

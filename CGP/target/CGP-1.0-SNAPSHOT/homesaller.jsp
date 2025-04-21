@@ -422,10 +422,50 @@
     .w3-button w3-black w3-display-left:hover{
         color:#ccc ;
         background-color: #d6e93a    }
+    
+    .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 10px;
+            background: #ff6600;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            width: 30px;
+            height: 30px
+        }
+        .cart-icon:hover {
+            transform: scale(1.5);
+        }
+        .cart-popup {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            background: white;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .show {
+            display: block;
+        }
             
         </style>
         </head>
         <body>
+            
+            <script>
+        function toggleCart() {
+            document.getElementById('cart-popup').classList.toggle('show');
+        }
+    </script>
+    
 
             <!-- Navigation Bar -->
             <div class="navbar">
@@ -443,10 +483,13 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button class="search-button" onclick="performSearch()"></button>
-        </div>
+<div class="search-container">
+    <form method="get" action="homesaller.jsp">
+        <input type="text" id="searchInput" name="search" placeholder="Search...">
+        <button class="search-button" type="submit">Search</button>
+    </form>
+</div>
+
        
     </div>
 
@@ -459,7 +502,7 @@
                 <a href="game2.jsp">Game</a>
                 <a href="setting_seller.jsp">Setting</a>
                 <a href="login.jsp">Login</a>
-                <a href="logout_user.jsp">Logout</a>
+                <a href="logout_shop.jsp">Logout</a>
                 
 
             </div>
@@ -575,38 +618,52 @@
             <!-- Items Container -->
             <div class="items-container" id="itemsContainer">
                 <%
-                    conn = null;
-                    stmt = null;
-                    rs = null;
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-                        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery("SELECT * FROM items");
+    conn = null;
+    stmt = null;
+    rs = null;
+    String searchQuery = request.getParameter("search");
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
 
-                        while (rs.next()) {
-                            int itemcode = rs.getInt("item_code");
-                            String itemCategory = rs.getString("category");
-                            String itemName = rs.getString("item_name");
-                            String itemDescription = rs.getString("item_description");
-                            String itemImage = rs.getString("img_url");
-                %>
-                            <div class="item-card" data-category="<%= itemCategory %>">
-                                <img src="<%= itemImage %>" alt="<%= itemName %>">
-                                <h3><%= itemName %></h3>
-                                <p><%= itemDescription %></p>
-                                 <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
-                            </div>
-                <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (rs != null) rs.close();
-                        if (stmt != null) stmt.close();
-                        if (conn != null) conn.close();
-                    }
-                %>
+        String sql;
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            // Search for items by name or description
+            sql = "SELECT * FROM items WHERE item_name LIKE ? OR item_description LIKE ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + searchQuery + "%");
+            pstmt.setString(2, "%" + searchQuery + "%");
+            rs = pstmt.executeQuery();
+        } else {
+            // Show all items
+            sql = "SELECT * FROM items";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+        }
+
+        while (rs.next()) {
+            int itemcode = rs.getInt("item_code");
+            String itemCategory = rs.getString("category");
+            String itemName = rs.getString("item_name");
+            String itemDescription = rs.getString("item_description");
+            String itemImage = rs.getString("img_url");
+%>
+    <div class="item-card" data-category="<%= itemCategory %>">
+        <img src="<%= itemImage %>" alt="<%= itemName %>">
+        <h3><%= itemName %></h3>
+        <p><%= itemDescription %></p>
+        <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
+    </div>
+<%
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) rs.close();
+        if (stmt != null) stmt.close();
+        if (conn != null) conn.close();
+    }
+%>
             </div>
         </div>
 
@@ -656,10 +713,10 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p>Courier Service Name</p>
-                <p>23/A, Jaya Mawatha, Rathnapura</p>
-                <p><a href="mailto:curierservice@gmail.com">curierservice@gmail.com</a></p>
-                <p><a href="tel:0761214345">0761214345</a></p>
+                <p>Snappy Drop</p>
+                <p>23/A, Main Street, Colombo</p>
+                <p><a href="www.snappydrop066@gmail.com">snappydrop066@gmail.com</a></p>
+                <p><a href="tel:076121434">076121434</a></p><p><a href="tel:077537108">077537108</a></p>
             </div>
 
   
@@ -681,5 +738,11 @@
                 });
 
             </script>
+            <div class="cart-icon" onclick="toggleCart()">
+       <a href="cart.jsp"> 🛒</a>
+        <div id="cart-popup" class="cart-popup">
+            
+        </div>
+           
         </body>
         </html>

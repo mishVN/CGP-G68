@@ -4,6 +4,8 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
     // Retrieve the cart from the session
@@ -57,9 +59,9 @@
         String province = request.getParameter("province");
         String deliveryMethod = request.getParameter("delevery");
         String phone = request.getParameter("phone");
+        String addressName = request.getParameter("address-name");
+        String saveAddress = request.getParameter("save-address");
 
-        
-        
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
@@ -131,6 +133,26 @@
 
             int rowsInserted = stmt.executeUpdate();
 
+            // Save address if requested
+            if (saveAddress != null && saveAddress.equals("on") && addressName != null && !addressName.isEmpty()) {
+                // Assuming you have a user ID in session (you'll need to implement user authentication)
+                String userId = (String) session.getAttribute("user_id");
+                if (userId != null) {
+                    String saveAddressSql = "INSERT INTO saved_addresses (user_id, address_name, full_name, address, city, district, province, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    PreparedStatement saveAddressStmt = conn.prepareStatement(saveAddressSql);
+                    saveAddressStmt.setString(1, userId);
+                    saveAddressStmt.setString(2, addressName);
+                    saveAddressStmt.setString(3, fullName);
+                    saveAddressStmt.setString(4, address);
+                    saveAddressStmt.setString(5, city);
+                    saveAddressStmt.setString(6, district);
+                    saveAddressStmt.setString(7, province);
+                    saveAddressStmt.setString(8, phone);
+                    saveAddressStmt.executeUpdate();
+                    saveAddressStmt.close();
+                }
+            }
+
             if (rowsInserted > 0) {
                 session.setAttribute("cart", null); // Clear the cart after successful order
                 response.sendRedirect("Payment.jsp"); // Redirect to a success page
@@ -162,14 +184,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .container {
             margin-top: 20px;
             display: flex;
             background: white;
-            max-width: 1000px;
+            max-width: 1200px;
             width: 100%;
             padding: 20px;
             border-radius: 10px;
@@ -181,12 +203,12 @@
         }
 
         .left {
-            width: 55%;
+            width: 50%;
             border-right: 2px solid #ddd;
         }
 
         .right {
-            width: 45%;
+            width: 50%;
         }
 
         h2 {
@@ -254,7 +276,7 @@
             margin-bottom: 5px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -299,115 +321,157 @@
         }
         
         #district {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease;
-}
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
 
-/* Adding focus effect */
-#district:focus {
-    border-color: #007BFF;
-    outline: none;
-}
+        #district:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
 
-/* Adding spacing between options */
-#district option {
-    padding: 10px;
-}
+        #district option {
+            padding: 10px;
+        }
 
-/* Optional: Make the dropdown box appear a little more interactive */
-#district:hover {
-    cursor: pointer;
-}
+        #district:hover {
+            cursor: pointer;
+        }
 
-/* Styling for required field indicator */
-#district:invalid {
-    border-color: #e74c3c;
-}
-
+        #district:invalid {
+            border-color: #e74c3c;
+        }
 
         #province {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease;
-}
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
 
-/* Adding focus effect */
-#province:focus {
-    border-color: #007BFF;
-    outline: none;
-}
+        #province:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
 
-/* Adding spacing between options */
-#province option {
-    padding: 10px;
-}
+        #province option {
+            padding: 10px;
+        }
 
-/* Optional: Make the dropdown box appear a little more interactive */
-#province:hover {
-    cursor: pointer;
-}
+        #province:hover {
+            cursor: pointer;
+        }
 
-/* Styling for required field indicator */
-#province:invalid {
-    border-color: #e74c3c;
-}
+        #province:invalid {
+            border-color: #e74c3c;
+        }
 
-#costLabel {
+        #costLabel {
             font-size: 18px;
             font-weight: bold;
             color: #007bff;
             margin-top: 10px;
         }
-        order-total2{
-            font-size: 20px;
-            font-weight: bold;
-            color: #28a745;
-            margin-top: 20px;
-            color: #007BFF;
+        
+        #deleverymethod {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        #deleverymethod:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        #deleverymethod option {
+            padding: 10px;
+        }
+
+        #deleverymethod:hover {
+            cursor: pointer;
+        }
+
+        #deleverymethod:invalid {
+            border-color: #e74c3c;
         }
         
-         #deleverymethod {
-    width: 100%;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease;
-}
-
-/* Adding focus effect */
-#deleverymethod:focus {
-    border-color: #007BFF;
-    outline: none;
-}
-
-/* Adding spacing between options */
-#deleverymethod option {
-    padding: 10px;
-}
-
-/* Optional: Make the dropdown box appear a little more interactive */
-#deleverymethod:hover {
-    cursor: pointer;
-}
-
-/* Styling for required field indicator */
-#deleverymethod:invalid {
-    border-color: #e74c3c;
-}
+        .address-management {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
         
+        .saved-addresses {
+            margin-top: 15px;
+        }
         
-
+        .address-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .address-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .address-name {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .address-details {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .save-address-section {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .payment-options {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .payment-options .btn {
+            width: 48%;
+        }
     </style>
 </head>
 <body>
@@ -465,7 +529,75 @@
     <!-- Right Side: Order Form -->
     <div class="right">
         <h2>Delivery Details</h2>
-        <form id="order-form" action="Payment.jsp" method="post">
+        <form id="order-form" action="placeorder.jsp" method="post">
+            <!-- Saved Addresses Section -->
+            <div class="address-management">
+                <h3>Saved Addresses</h3>
+                <div class="saved-addresses" id="saved-addresses">
+                    <%
+                        // Load saved addresses for the user
+                        String userId = (String) session.getAttribute("user_id");
+                        List<Map<String, String>> addresses = new ArrayList<>();
+                        
+                        if (userId != null) {
+                            try {
+                                Class.forName("com.mysql.cj.jdbc.Driver");
+                                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+                                
+                                stmt = conn.prepareStatement("SELECT * FROM saved_addresses WHERE user_id = ?");
+                                stmt.setString(1, userId);
+                                rs = stmt.executeQuery();
+                                
+                                while (rs.next()) {
+                                    Map<String, String> addressMap = new HashMap<>();
+                                    addressMap.put("id", rs.getString("id"));
+                                    addressMap.put("address_name", rs.getString("address_name"));
+                                    addressMap.put("full_name", rs.getString("full_name"));
+                                    addressMap.put("address", rs.getString("address"));
+                                    addressMap.put("city", rs.getString("city"));
+                                    addressMap.put("district", rs.getString("district"));
+                                    addressMap.put("province", rs.getString("province"));
+                                    addressMap.put("phone", rs.getString("phone"));
+                                    addresses.add(addressMap);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (rs != null) rs.close();
+                                if (stmt != null) stmt.close();
+                                if (conn != null) conn.close();
+                            }
+                        }
+                        
+                        if (addresses.isEmpty()) {
+                    %>
+                        <p>No saved addresses found. Add one below.</p>
+                    <%
+                        } else {
+                            for (Map<String, String> addr : addresses) {
+                    %>
+                        <div class="address-item" onclick="fillAddressForm(
+                            '<%= addr.get("full_name") %>',
+                            '<%= addr.get("address") %>',
+                            '<%= addr.get("city") %>',
+                            '<%= addr.get("district") %>',
+                            '<%= addr.get("province") %>',
+                            '<%= addr.get("phone") %>'
+                        )">
+                            <div class="address-name"><%= addr.get("address_name") %></div>
+                            <div class="address-details">
+                                <%= addr.get("full_name") %>, <%= addr.get("address") %>, <%= addr.get("city") %><br>
+                                <%= addr.get("district") %>, <%= addr.get("province") %><br>
+                                Phone: <%= addr.get("phone") %>
+                            </div>
+                        </div>
+                    <%
+                            }
+                        }
+                    %>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="full-name">Full Name:</label>
                 <input type="text" id="full-name" name="full-name" required>
@@ -530,12 +662,11 @@
             </div>
 
             <div class="form-group">
-                <label for="province">Delevery Method</label>
-                <select id="province" name="delevery" required>
-                    <option value="noramal">Normal</option>
+                <label for="deleverymethod">Delivery Method</label>
+                <select id="deleverymethod" name="delevery" required>
+                    <option value="normal">Normal</option>
                     <option value="oneday">One Day</option>
                     <option value="posting">Posting</option>
-                   
                 </select>
             </div>
 
@@ -544,8 +675,20 @@
                 <input type="text" id="phone" name="phone" required>
             </div>
 
+            <!-- Save Address Section -->
+            <div class="save-address-section">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="save-address" name="save-address" onchange="toggleAddressNameField()">
+                    <label for="save-address">Save this address for future use</label>
+                </div>
+                <div class="form-group hidden" id="address-name-group">
+                    <label for="address-name">Address Name (e.g., Home, Office):</label>
+                    <input type="text" id="address-name" name="address-name">
+                </div>
+            </div>
+
             <div id="costLabel">Delivery Cost: <span id="costValue">N/A</span></div>
-            <h3 class="order-total" id="order-total">Subtotal: Rs. <%= totalPrice %></h3>
+            <h3 class="order-total">Subtotal: Rs. <%= totalPrice %></h3>
             <div id="totalLabel">Total Cost: <span id="totalCostValue">N/A</span></div>
 
             <div class="order-actions">
@@ -553,8 +696,8 @@
                 <button type="submit" class="btn btn-place">Place Order</button>
             </div>
 
-            <div class="order-actions">
-                <button type="button" class="btn btn-place" onclick="location.href='Payment.jsp'">Pay Card</button>
+            <div class="payment-options">
+                <button type="button" class="btn btn-place" onclick="location.href='Payment.jsp'">Pay with Card</button>
                 <button type="button" class="btn btn-place" onclick="cashondelivery()">Cash on Delivery</button>
             </div>
         </form>
@@ -591,35 +734,62 @@
             "Kalutara": 360
         };
 
-      let district = document.getElementById("district").value;
-let costValue = document.getElementById("costValue");
-let totalCostValue = document.getElementById("totalCostValue");
-let orderTotal2 = document.getElementById("order-total2");
+        let district = document.getElementById("district").value;
+        let costValue = document.getElementById("costValue");
+        let totalCostValue = document.getElementById("totalCostValue");
 
-let subtotal = <%= totalPrice %>; // Subtotal from the cart
-let deliveryCost = 0; // Initialize delivery cost
-let totalCost = subtotal; // Initialize total cost with subtotal
+        let subtotal = <%= totalPrice %>;
+        let deliveryCost = 0;
+        let totalCost = subtotal;
 
-if (district && deliveryCosts[district] !== undefined) {
-    // Assign delivery cost based on the selected district
-    deliveryCost = deliveryCosts[district];
-    // Calculate total cost
-    totalCost = subtotal + deliveryCost;
+        if (district && deliveryCosts[district] !== undefined) {
+            deliveryCost = deliveryCosts[district];
+            totalCost = subtotal + deliveryCost;
 
-    // Update the displayed values
-    costValue.innerHTML = `Rs. ${deliveryCost}`;
-    totalCostValue.innerHTML = `Rs. ${totalCost}`;
-    orderTotal2.innerHTML = `Total: Rs. ${totalCost}`;
-} else {
-    // If no district is selected or delivery cost is not defined
-    costValue.innerHTML = "N/A";
-    totalCostValue.innerHTML = `Rs. ${subtotal}`; // Display subtotal as total cost
-    orderTotal2.innerHTML = `Total: Rs. ${subtotal}`;
-}
+            costValue.innerHTML = `Rs. ${deliveryCost}`;
+            totalCostValue.innerHTML = `Rs. ${totalCost}`;
+        } else {
+            costValue.innerHTML = "N/A";
+            totalCostValue.innerHTML = `Rs. ${subtotal}`;
+        }
+    }
+
+    function toggleAddressNameField() {
+        const saveAddressCheckbox = document.getElementById("save-address");
+        const addressNameGroup = document.getElementById("address-name-group");
+        
+        if (saveAddressCheckbox.checked) {
+            addressNameGroup.classList.remove("hidden");
+        } else {
+            addressNameGroup.classList.add("hidden");
+        }
+    }
+
+    function fillAddressForm(fullName, address, city, district, province, phone) {
+        document.getElementById("full-name").value = fullName;
+        document.getElementById("address").value = address;
+        document.getElementById("city").value = city;
+        document.getElementById("district").value = district;
+        document.getElementById("province").value = province;
+        document.getElementById("phone").value = phone;
+        
+        
+        calculateDeliveryCost();
+    }
+
+    function cashondelivery() {
+        // Submit the form with a hidden field indicating cash on delivery
+        let form = document.getElementById("order-form");
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payment_method";
+        input.value = "cash";
+        form.appendChild(input);
+        form.submit();
     }
 
     // Calculate delivery cost on page load
-    window.onload = function () {
+    window.onload = function() {
         calculateDeliveryCost();
     };
 </script>

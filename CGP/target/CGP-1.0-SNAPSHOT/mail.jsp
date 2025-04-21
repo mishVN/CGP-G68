@@ -1,72 +1,67 @@
-<%@ page import="java.util.Properties" %>
-<%@ page import="jakarta.mail.*" %>
-<%@ page import="jakarta.mail.internet.*" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Email Sender</title>
-</head>
-<body>
-
-    <h2>Send an Email</h2>
-
-    <form method="post">
-        <label>Recipient Email:</label>
-        <input type="email" name="email" required> <br><br>
-
-        <label>Subject:</label>
-        <input type="text" name="subject" required> <br><br>
-
-        <label>Message:</label>
-        <textarea name="message" rows="4" required></textarea> <br><br>
-
-        <button type="submit" name="sendEmail">Send</button>
-    </form>
+<%@ page import="java.sql.*, java.util.Properties, jakarta.mail.*, jakarta.mail.internet.*, java.io.*" %>
+<%@ page contentType="text/plain;charset=UTF-8" %>
 
 <%
-    if (request.getMethod().equalsIgnoreCase("post") && request.getParameter("sendEmail") != null) {
-        String toEmail = request.getParameter("email");
-        String subject = request.getParameter("subject");
-        String messageText = request.getParameter("message");
+    String orderId = request.getParameter("order_id");
+    String subject = request.getParameter("subject");
+    String messageText = request.getParameter("message");
 
-        final String senderEmail = "snappydrop066@gmail.com"; // Replace with your email
-        final String senderPassword = "_Snappydrop@68"; // Use Google App Password
+    String result = "fail";
 
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        // ✅ Renamed "session" to "mailSession"
-        Session mailSession = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmail, senderPassword);
-            }
-        });
+    if (orderId != null && subject != null && messageText != null) {
+        String recipientEmail = null;
 
         try {
-            Message msg = new MimeMessage(mailSession);
-            msg.setFrom(new InternetAddress(senderEmail));
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            msg.setSubject(subject);
-            msg.setText(messageText);
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
 
-            Transport.send(msg);
-%>
-            <p style="color: green;">Email Sent Successfully to <%= toEmail %>!</p>
-<%
-        } catch (MessagingException e) {
-%>
-            <p style="color: red;">Error Sending Email: <%= e.getMessage() %></p>
-<%
+            PreparedStatement pstmt = con.prepareStatement(
+                "SELECT ua.email FROM oders o JOIN user_account ua ON o.customer_id = ua.user_id WHERE o.oder_id = ?"
+            );
+            pstmt.setInt(1, Integer.parseInt(orderId));
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                recipientEmail = rs.getString("email");
+            }
+
+            rs.close();
+            pstmt.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (recipientEmail != null) {
+            final String senderEmail = "snappydrop066@gmail.com";
+            final String senderPassword = "izcpdgmahqnzjsvr";
+
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+
+            Session mailSession = Session.getInstance(props, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(senderEmail, senderPassword);
+                }
+            });
+
+            try {
+                Message msg = new MimeMessage(mailSession);
+                msg.setFrom(new InternetAddress(senderEmail, "SnappyDrop Admin"));
+                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+                msg.setSubject(subject);
+                msg.setContent("<p>" + messageText + "</p>", "text/html; charset=UTF-8");
+
+                Transport.send(msg);
+                result = "success";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
-%>
 
-</body>
-</html>
+    out.print(result);
+%>

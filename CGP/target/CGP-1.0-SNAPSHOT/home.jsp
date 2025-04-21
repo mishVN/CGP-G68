@@ -479,11 +479,11 @@
             <a href="login.jsp">Login</a>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button class="search-button" onclick="performSearch()"></button>
-        </div>
+       <!-- Search Bar -->
+<form method="get" action="home.jsp" class="search-container">
+    <input type="text" name="search" id="searchInput" placeholder="Search..." value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+    <button class="search-button" type="submit">Search</button>
+</form>
        
     </div>
 
@@ -502,6 +502,8 @@
 <div class="main-container">
     
             <br>
+            
+            
             <div class="itemscontent"><br><hr>
 
                 <div class="w3-content w3-display-container">
@@ -611,39 +613,51 @@
             <!-- Items Container -->
             <div class="items-container" id="itemsContainer">
                 
-                <%
-                    conn = null;
-                    stmt = null;
-                    rs = null;
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-                        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery("SELECT * FROM items");
+                 <%
+        conn = null;
+        stmt = null;
+        rs = null;
+        String searchTerm = request.getParameter("search");
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+            stmt = conn.createStatement();
+            String sql;
 
-                        while (rs.next()) {
-                            int itemcode = rs.getInt("item_code");
-                            String itemCategory = rs.getString("category");
-                            String itemName = rs.getString("item_name");
-                            String itemDescription = rs.getString("item_description");
-                            String itemImage = rs.getString("img_url");
-                %>
-                            <div class="item-card" data-category="<%= itemCategory %>">
-                                <img src="<%= itemImage %>" alt="<%= itemName %>">
-                                <h3><%= itemName %></h3>
-                                <p><%= itemDescription %></p>
-                                 <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
-                            </div>
-                <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (rs != null) rs.close();
-                        if (stmt != null) stmt.close();
-                        if (conn != null) conn.close();
-                    }
-                %>
+            if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+                sql = "SELECT * FROM items WHERE item_name LIKE '%" + searchTerm + "%' OR item_description LIKE '%" + searchTerm + "%'";
+            } else {
+                sql = "SELECT * FROM items";
+            }
+
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int itemcode = rs.getInt("item_code");
+                String itemCategory = rs.getString("category");
+                String itemName = rs.getString("item_name");
+                String itemDescription = rs.getString("item_description");
+                String itemImage = rs.getString("img_url");
+    %>
+                <div class="item-card" data-category="<%= itemCategory %>">
+                    <img src="<%= itemImage %>" alt="<%= itemName %>">
+                    <h3><%= itemName %></h3>
+                    <p><%= itemDescription %></p>
+                    <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
+                </div>
+    <%
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+    %>
+            <p>Error loading items!</p>
+    <%
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+    %>
             </div>
         </div>
 
@@ -693,10 +707,10 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p>Courier Service Name</p>
-                <p>23/A, Jaya Mawatha, Rathnapura</p>
-                <p><a href="mailto:curierservice@gmail.com">curierservice@gmail.com</a></p>
-                <p><a href="tel:0761214345">0761214345</a></p>
+                <p>Snappy Drop</p>
+                <p>23/A, Main Street, Colombo</p>
+                <p><a href="www.snappydrop066@gmail.com">snappydrop066@gmail.com</a></p>
+                <p><a href="tel:076121434">076121434</a></p><p><a href="tel:077537108">077537108</a></p>
             </div>
 
   
