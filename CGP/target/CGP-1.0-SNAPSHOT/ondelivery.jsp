@@ -20,11 +20,9 @@
             height: 100vh;
             display: flex;
         }
-        
-        .adminpanle{
+        .adminpanle {
             text-align: center;
         }
-        
         .sidebar {
             width: 250px;
             background: #333;
@@ -36,12 +34,10 @@
         .sidebar ul {
             list-style: none;
             padding: 0;
-            
         }
         .sidebar ul li {
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            
         }
         .sidebar ul li a {
             color: white;
@@ -51,7 +47,7 @@
         }
         .sidebar ul li a:hover {
             background: #007bff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
         }
         .main-content {
@@ -72,43 +68,16 @@
                 transform: translateY(0);
             }
         }
-        
-        .dashboard {
-            display: flex;
-            flex-direction: row;
-            
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-        
-        .stat-box {
-            background: #007bff;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 30%;
-            min-width: 150px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease-in-out;
-        }
-        .stat-box:hover {
-            transform: scale(1.05);
-        }
-        .stat-box h2 {
-            margin: 0 0 10px;
-        }
-        
         .container {
             background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             text-align: center;
         }
-        .headertitle{
-           color: #333; 
+        .headertitle {
+            color: #333;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
@@ -116,7 +85,7 @@
             margin-top: 20px;
         }
         th, td {
-            padding: 10px;
+            padding: 12px 10px;
             border: 1px solid #ddd;
             text-align: center;
         }
@@ -129,13 +98,13 @@
             transition: background 0.3s ease-in-out;
         }
         .btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             border: none;
             background: #28a745;
             color: #fff;
             cursor: pointer;
-            border-radius: 5px;
-            transition: transform 0.2s;
+            border-radius: 6px;
+            transition: all 0.3s ease-in-out;
         }
         .btn:hover {
             background: #218838;
@@ -145,7 +114,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2  class="adminpanle">Admin Panel</h2>
+        <h2 class="adminpanle">Admin Panel</h2>
         <ul>
             <li><a href="admin_home.jsp">Dashboard</a></li>
             <li><a href="admin_oderdetails.jsp">Orders</a></li>
@@ -161,75 +130,111 @@
             <li><a href="admin_report.jsp">Reports</a></li>
         </ul>
     </div>
+
     <div class="main-content">
-        
         <div class="container">
-        <h2 class="headertitle">On Delivery Orders</h2>
-        <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Customer NIC</th>
-                <th>Amount</th>
-                <th>Contact</th>
-                <th>Status</th>
-                <th>Location</th>
-                <th>Action</th>
-            </tr>
-            <%
-                try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
-                    PreparedStatement ps = con.prepareStatement("SELECT * FROM oders WHERE status = ?");
-                    ps.setString(1, "ondelivery");
-                    ResultSet rs = ps.executeQuery();
+            <h2 class="headertitle">On Delivery Orders</h2>
+            <table>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer NIC</th>
+                    <th>Amount</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+                <%
+                    try {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+                        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+                        PreparedStatement ps = con.prepareStatement("SELECT * FROM oders WHERE status = ?");
+                        ps.setString(1, "ondelivery");
+                        ResultSet rs = ps.executeQuery();
+                        while (rs.next()) {
+                        
+                    int orderId = rs.getInt("oder_id");
+                    int customerId = rs.getInt("customer_id");
+                    double total = rs.getDouble("total");
+                    String contact = rs.getString("customer_contact");
+                    String status = rs.getString("status");
 
-                    while (rs.next()) {
-            %>
-            <tr>
-                <td><%= rs.getInt("oder_id") %></td>
-                <td><%= rs.getString("customer_id") %></td>
-                <td><%= rs.getDouble("total") %></td>
-                <td><%= rs.getString("customer_contact") %></td>
-                <td><%= rs.getString("status") %></td>
-                <td><a href="map.jsp">MAP</a></td>
-                <td><button class="btn" onclick="tableupdate(this, <%= rs.getInt("oder_id") %>)">Finished</button></td>
-            </tr>
-            <%
+                    String subject = "Your Order #" + orderId + " Delivered";
+                    String message = "Dear customer, your order #"+ orderId+" has been successfully delivered!. we truly appreciate your trust. We hope to serve you again soon! .Thank you for using our courier service . ✅📬";
+                %>
+                <tr>
+    <td><%= orderId %></td>
+    <td><%= customerId %></td>
+    <td><%= total %></td>
+    <td><%= contact %></td>
+    <td><%= status %></td>
+    <td>
+        <button class="btn" onclick="redirectToMap(<%= orderId %>)">MAP</button>
+    </td>
+    <td>
+        <button class="btn" onclick="updateAndSend(<%= orderId %>, '<%= subject.replace("'", "\\'") %>', '<%= message.replace("'", "\\'") %>')">Finished</button>
+    </td>
+</tr>
+
+                <%
+                        }
+                        con.close();
+                    } catch (Exception e) {
+                        out.println("<tr><td colspan='7'>Error: " + e.getMessage() + "</td></tr>");
                     }
-                    con.close();
-                } catch (Exception e) {
-                    out.println("<tr><td colspan='6'>Error: " + e.getMessage() + "</td></tr>");
-                }
-            %>
-        </table>
+                %>
+            </table>
+        </div>
     </div>
 
-    
-    </div>
+    <script>
         
-        <script>
-        function tableupdate(button, orderId) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "", true); // Send request to the same page
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        function redirectToMap(orderId) {
+    window.location.href = "Address_management.jsp?orderId=" + orderId;
+}
+        
+        function updateAndSend(orderId, subject, message) {
+        // First update the order status
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    button.closest("tr").cells[5].innerText = "Finished"; // Update status
-                    button.disabled = true; // Disable button
-                    button.innerText = "Updated";
-                    button.style.background = "gray";
-                    location.reload();
-                }
-            };
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                sendEmail(orderId, subject, message);
+                alert("Order #" + orderId + " marked as Finished and email sent.");
+                location.reload();
+            }
+        };
 
-            xhr.send("update_order=" + orderId);
+        xhr.send("update_order=" + orderId);
+    }
+
+    function sendEmail(orderId, subject, message) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "mail.jsp", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200 && xhr.responseText.trim() === "success") {
+                alert("Order #" + orderId + " marked as Finished and email sent.");
+                location.reload();
+            } else {
+                alert("Failed to send email for Order #" + orderId + ".");
+            }
         }
-        
+    };
+
+    var data = "order_id=" + encodeURIComponent(orderId) +
+               "&subject=" + encodeURIComponent(subject) +
+               "&message=" + encodeURIComponent(message);
+    xhr.send(data);
+}
     </script>
-    
+
     <%
-        if (request.getMethod().equals("POST")) {
+        if ("POST".equalsIgnoreCase(request.getMethod())) {
             String orderId = request.getParameter("update_order");
             if (orderId != null) {
                 try {
@@ -245,6 +250,5 @@
             }
         }
     %>
-    
 </body>
 </html>

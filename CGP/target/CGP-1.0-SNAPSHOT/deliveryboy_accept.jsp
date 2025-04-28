@@ -173,6 +173,7 @@
                     <th>Order ID</th>
                     <th>Customer ID</th>
                     <th>Address</th>
+                    <th>Navigate to Map</th>
                     <th>Status</th>
                     <th>Finish</th>
                 </tr>
@@ -192,6 +193,9 @@
                         <td><%= order.get("order_id") %></td>
                         <td><%= order.get("customer_id") %></td>
                         <td><%= order.get("address") %></td>
+                        <td>
+                            <button class="finish-btn" onclick="redirectToMap('<%= order.get("order_id") %>')">MAP</button>
+                        </td>
                         <td><span class="status accept"><%= order.get("status") %></span></td>
                         <td>
                             <form method="post">
@@ -207,6 +211,12 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        function redirectToMap(orderId) {
+            window.location.href = "Address_management.jsp?orderId=" + orderId;
+        }
+    </script>
 
 </body>
 </html>

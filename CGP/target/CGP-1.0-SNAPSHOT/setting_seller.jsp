@@ -100,6 +100,15 @@
             <h3>Contact Delivery Boy</h3>
                 </div></a>
       
+        <a href="return.jsp"><div class="service">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMGujb1TrYeKeHzVVL_ozLCaC8ajGbiIwN8w&s" alt="Service Logo 2">
+            <h3>Return Order</h3>
+                </div></a>
+        
+        <a href="redelivery.jsp"><div class="service">
+            <img src="https://cdn-icons-png.freepik.com/512/12062/12062144.png" alt="Service Logo 2">
+            <h3>Reorder</h3>
+                </div></a>
     </div>
 
 </body>

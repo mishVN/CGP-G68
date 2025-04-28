@@ -261,7 +261,7 @@ h2, h3 {
         <div class="nav-links">
             <a href="homesaller.jsp">Home</a>
             <a href="seller_item.jsp">Items management</a>
-            <a href="our_services.jsp">Services</a>
+            <a href="setting_seller.jsp">Setting</a>
             <a href="login.jsp">Login</a>
         </div>
 

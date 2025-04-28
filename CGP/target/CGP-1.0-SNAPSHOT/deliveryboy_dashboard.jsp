@@ -150,6 +150,11 @@
             <p><%= completedDeliveriesCount %> Completed</p>
             <a href="deliveryboy_finishedorders.jsp" class="nav-btn">View Finished Orders</a>
         </div>
+            <div class="card">
+            <h2>Earning Management</h2>
+            <p> Your Income Report</p>
+            <a href="Earning_managemnet.jsp" class="nav-btn">View Accept Orders</a>
+        </div>
         <div class="card">
             <h2>Setting</h2>
             <p>Manage Account?</p>

@@ -483,10 +483,13 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search...">
-            <button class="search-button" onclick="performSearch()"></button>
-        </div>
+<div class="search-container">
+    <form method="get" action="homesaller.jsp">
+        <input type="text" id="searchInput" name="search" placeholder="Search...">
+        <button class="search-button" type="submit">Search</button>
+    </form>
+</div>
+
        
     </div>
 
@@ -615,38 +618,52 @@
             <!-- Items Container -->
             <div class="items-container" id="itemsContainer">
                 <%
-                    conn = null;
-                    stmt = null;
-                    rs = null;
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-                        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery("SELECT * FROM items");
+    conn = null;
+    stmt = null;
+    rs = null;
+    String searchQuery = request.getParameter("search");
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
 
-                        while (rs.next()) {
-                            int itemcode = rs.getInt("item_code");
-                            String itemCategory = rs.getString("category");
-                            String itemName = rs.getString("item_name");
-                            String itemDescription = rs.getString("item_description");
-                            String itemImage = rs.getString("img_url");
-                %>
-                            <div class="item-card" data-category="<%= itemCategory %>">
-                                <img src="<%= itemImage %>" alt="<%= itemName %>">
-                                <h3><%= itemName %></h3>
-                                <p><%= itemDescription %></p>
-                                 <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
-                            </div>
-                <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (rs != null) rs.close();
-                        if (stmt != null) stmt.close();
-                        if (conn != null) conn.close();
-                    }
-                %>
+        String sql;
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            // Search for items by name or description
+            sql = "SELECT * FROM items WHERE item_name LIKE ? OR item_description LIKE ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + searchQuery + "%");
+            pstmt.setString(2, "%" + searchQuery + "%");
+            rs = pstmt.executeQuery();
+        } else {
+            // Show all items
+            sql = "SELECT * FROM items";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+        }
+
+        while (rs.next()) {
+            int itemcode = rs.getInt("item_code");
+            String itemCategory = rs.getString("category");
+            String itemName = rs.getString("item_name");
+            String itemDescription = rs.getString("item_description");
+            String itemImage = rs.getString("img_url");
+%>
+    <div class="item-card" data-category="<%= itemCategory %>">
+        <img src="<%= itemImage %>" alt="<%= itemName %>">
+        <h3><%= itemName %></h3>
+        <p><%= itemDescription %></p>
+        <button onclick="location.href='description_page.jsp?item=<%= itemcode %>'">Buy</button>
+    </div>
+<%
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) rs.close();
+        if (stmt != null) stmt.close();
+        if (conn != null) conn.close();
+    }
+%>
             </div>
         </div>
 

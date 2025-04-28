@@ -12,31 +12,6 @@
     int subtotal = 0;
 
     Map<String, Integer> deliveryCosts = new HashMap<>();
-    deliveryCosts.put("Ampara", 700);
-    deliveryCosts.put("Anuradhapura", 550);
-    deliveryCosts.put("Badulla", 600);
-    deliveryCosts.put("Batticaloa", 750);
-    deliveryCosts.put("Colombo", 300);
-    deliveryCosts.put("Galle", 450);
-    deliveryCosts.put("Gampaha", 350);
-    deliveryCosts.put("Hambantota", 500);
-    deliveryCosts.put("Jaffna", 800);
-    deliveryCosts.put("Kandy", 400);
-    deliveryCosts.put("Kegalle", 420);
-    deliveryCosts.put("Kilinochchi", 850);
-    deliveryCosts.put("Kurunegala", 450);
-    deliveryCosts.put("Mannar", 750);
-    deliveryCosts.put("Matale", 430);
-    deliveryCosts.put("Matara", 500);
-    deliveryCosts.put("Monaragala", 600);
-    deliveryCosts.put("Mullaitivu", 820);
-    deliveryCosts.put("Nuwara Eliya", 480);
-    deliveryCosts.put("Polonnaruwa", 520);
-    deliveryCosts.put("Puttalam", 470);
-    deliveryCosts.put("Ratnapura", 490);
-    deliveryCosts.put("Trincomalee", 650);
-    deliveryCosts.put("Vavuniya", 780);
-    deliveryCosts.put("Kalutara", 360);
 
     Connection conn = null;
     PreparedStatement stmt = null;
@@ -45,6 +20,15 @@
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cgp", "root", "3323");
+
+        // 🛠️ Load delivery costs dynamically from database
+        stmt = conn.prepareStatement("SELECT district, delivery_fee FROM delivery_fee");
+        rs = stmt.executeQuery();
+        while (rs.next()) {
+            deliveryCosts.put(rs.getString("district"), rs.getInt("delivery_fee"));
+        }
+        rs.close();
+        stmt.close();
 
         if (!cart.isEmpty()) {
             String placeholders = cart.keySet().stream().map(id -> "?").collect(Collectors.joining(","));
@@ -76,6 +60,7 @@
             String fullName = request.getParameter("full-name");
             String address = request.getParameter("address");
             String city = request.getParameter("city");
+            String postalcode = request.getParameter("postal-code");
             String district = request.getParameter("district");
             String province = request.getParameter("province");
             String deliveryMethod = request.getParameter("delevery");
@@ -85,7 +70,7 @@
             int deliveryCost = deliveryCosts.getOrDefault(district, 0);
             int total = subtotal + deliveryCost;
 
-            stmt = conn.prepareStatement("INSERT INTO oders (full_name, customer_address, city, district, province, customer_contact, delivery_method, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement("INSERT INTO oders (full_name, customer_address, city, district, province, customer_contact, delivery_method, total, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, fullName);
             stmt.setString(2, address);
             stmt.setString(3, city);
@@ -94,6 +79,7 @@
             stmt.setString(6, phone);
             stmt.setString(7, deliveryMethod);
             stmt.setInt(8, total);
+            stmt.setString(9, postalcode);
 
             int inserted = stmt.executeUpdate();
 
@@ -106,8 +92,8 @@
             stmt.close();
 
             if (inserted > 0 && "cashondelivery".equals(paymentMethod)) {
-                stmt = conn.prepareStatement("INSERT INTO payment ( total, payment_method) VALUES ( ?, 'cashondelivery')");
-                stmt.setInt(2, total);
+                stmt = conn.prepareStatement("INSERT INTO payment (total, payment_method) VALUES (?, 'cashondelivery')");
+                stmt.setInt(1, total);
                 stmt.executeUpdate();
                 stmt.close();
 
@@ -132,12 +118,13 @@
     }
 %>
 
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Place Order</title>
     <style>
-       /* Reset and Base */
+      
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -155,7 +142,7 @@ label {
     font-weight: bold;
 }
 
-/* Flex Layout */
+
 .main-content {
     display: flex;
     gap: 30px;
@@ -164,7 +151,7 @@ label {
     flex-wrap: wrap;
 }
 
-/* Containers */
+
 .container {
     background: #fff;
     padding: 20px;
@@ -177,7 +164,7 @@ label {
     min-width: 400px;
 }
 
-/* Cart Styling */
+
 .cart-item {
     display: flex;
     align-items: center;
@@ -210,7 +197,7 @@ label {
     color: #555;
 }
 
-/* Form Styling */
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -226,7 +213,7 @@ textarea {
     font-size: 14px;
 }
 
-/* Button */
+
 .btn {
     padding: 10px 20px;
     background: green;
@@ -241,14 +228,14 @@ textarea {
     background: darkgreen;
 }
 
-/* Summary Text */
+
 .summary {
     margin-top: 15px;
     font-weight: bold;
     font-size: 16px;
 }
 
-/* Responsive Design */
+
 @media (max-width: 900px) {
     .main-content {
         flex-direction: column;
@@ -267,7 +254,6 @@ textarea {
         const district = document.getElementById('district').value;
         const deliveryCost = deliveryPrices[district] || 0;
 
-        // Get the current subtotal from the page
         const subtotalText = document.querySelector(".summary").innerText;
         const subtotalMatch = subtotalText.match(/\d+/g);
         const subtotal = subtotalMatch ? parseInt(subtotalMatch[0]) : 0;
@@ -278,6 +264,7 @@ textarea {
         document.getElementById("total-cost").innerText = "Rs. " + total;
     }
 </script>
+
 </head>
 <body>
     
@@ -343,6 +330,11 @@ textarea {
             <label>Address</label>
             <textarea name="address" rows="2" required></textarea>
         </div>
+        
+        <div class="form-group">
+            <label>Postal Code</label>
+            <input type="text" name="postal-code" required>
+        </div>
 
         <div class="form-group">
             <label>City</label>
@@ -383,6 +375,8 @@ textarea {
                 <option value="posting">Posting</option>
             </select>
         </div>
+            
+            <input type="hidden" id="paymentMethod" name="paymentMethod" value="cashondelevery">
 
         <div class="form-group">
             <label>Phone</label>
@@ -394,15 +388,22 @@ textarea {
         <div class="summary">Total Cost: <span id="total-cost">Rs. <%= subtotal %></span></div>
 
         <br>
-        <button type="submit" class="btn">Place Order</button>
+        <button type="button" class="btn" onclick="submitForm('card')">Place Order</button>
+<button type="button" class="btn" onclick="submitForm('cashondelivery')">Cash On Delivery</button>
     </form>
         <div class="order-actions">
     <button type="button" class="btn btn-place" onclick="location.href='Payment.jsp?total=<%= subtotal %>'">Pay Card</button>
     <button type="submit" name="paymentMethod" value="cashondelivery" class="btn btn-cash">Cash On Delivery</button>
 
+</div>    
 </div>
+    
+    <script>
+function submitForm(method) {
+    document.getElementById('paymentMethod').value = method;
+    document.forms[0].submit();
+}
+</script>
 
-        
-</div>
 </body>
 </html>

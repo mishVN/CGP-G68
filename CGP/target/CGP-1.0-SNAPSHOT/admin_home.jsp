@@ -187,6 +187,27 @@
     tr:hover {
         background: #f5f5f5;
     }
+    .btn {
+    padding: 16px 32px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-left: auto; 
+    margin: 10px;
+}
+
+        .btn:hover {
+            background-color: #007BFF;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background-color: gray;
+            cursor: default;
+        }
 </style>
 </head>
 <body>
@@ -209,8 +230,15 @@
     </div>
     <div class="main-content">
         <header>
-            <h1>Courier Service Admin</h1>
+            <div style="display: flex;">
+    <button class="btn" onclick="location.href='system_config.jsp'">Go to System Configuration</button>
+    <br>
+    <div style="display: flex;">
+    <button  class="btn" onclick="location.href='view_return_order.jsp'">Return Orders</button>
+</div>
+
         </header>
+            <h1>Courier Service Admin</h1>
         <section class="dashboard">
             <div class="stat-box">
                 <h2>Total Orders</h2>
