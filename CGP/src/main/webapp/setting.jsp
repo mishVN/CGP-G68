@@ -84,19 +84,30 @@
     </header>
 
     <div class="container">
-        <a href="change_password.jsp"><div class="service">
+         <a href="change_password_seller.jsp"><div class="service">
          <img src="https://cdn-icons-png.freepik.com/256/11135/11135322.png?semt=ais_hybrid" alt="Service Logo 1">
             <h3>Change Password</h3>
             </div></a>
+        
         
             <a href="customer_support.jsp"><div class="service">
             <img src="https://cdn-icons-png.freepik.com/256/8781/8781830.png?semt=ais_hybrid" alt="Service Logo 2">
             <h3>Customer Support</h3>
                 </div></a>
-        
+            
         <a href="find_delivery_contact.jsp"><div class="service">
             <img src="https://i.pinimg.com/736x/fc/27/fb/fc27fb81e77cc56ba4ed981d7801ceb9.jpg" alt="Service Logo 2">
             <h3>Contact Delivery Boy</h3>
+                </div></a>
+      
+        <a href="return.jsp"><div class="service">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMGujb1TrYeKeHzVVL_ozLCaC8ajGbiIwN8w&s" alt="Service Logo 2">
+            <h3>Return Order</h3>
+                </div></a>
+        
+        <a href="redelivery.jsp"><div class="service">
+            <img src="https://cdn-icons-png.freepik.com/512/12062/12062144.png" alt="Service Logo 2">
+            <h3>Reorder</h3>
                 </div></a>
         
         

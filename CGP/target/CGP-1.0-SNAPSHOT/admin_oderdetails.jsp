@@ -13,6 +13,13 @@
             display: flex;
             margin: 0;
         }
+        
+        a.buttontableupdate {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
 
         .sidebar {
             width: 250px;
@@ -117,6 +124,7 @@
             <th>Contact</th>
             <th>Address</th>
             <th>Status</th>
+            <th>View Order</th>
             <th>Actions</th>
         </tr>
 
@@ -145,6 +153,12 @@
             <td><%= contact %></td>
             <td><%= address %></td>
             <td><%= status %></td>
+    <td>
+    <a class="buttontableupdate" 
+       href="viewoderdetails.jsp?order_id=<%= orderId %>&customer_id=<%= customerId %>&customer_address=<%= java.net.URLEncoder.encode(address, "UTF-8") %>">
+        View
+    </a>
+</td>
             <td>
                 <button class="buttontableupdate" onclick="updateAndSend(<%= orderId %>, '<%= subject.replace("'", "\\'") %>', '<%= message.replace("'", "\\'") %>')">Packed</button>
             </td>

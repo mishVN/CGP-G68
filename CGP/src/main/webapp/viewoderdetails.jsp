@@ -3,8 +3,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     String orderIdParam = request.getParameter("order_id");
-    String customerIdParam = request.getParameter("customer_id");
-    String customerAddress = request.getParameter("customer_address");
+String customerIdParam = request.getParameter("customer_id");
+String customerAddress = request.getParameter("customer_address");
+
 
     int orderId = 0;
     int customerId = 0;

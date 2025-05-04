@@ -182,7 +182,7 @@ if (email != null && password != null && userType != null) {
 
         String sql = "";
         if ("customer".equals(userType)) {
-            sql = "SELECT * FROM user_account WHERE email = ? AND password = ?";
+            sql = "SELECT * FROM user_account WHERE email = ? AND password = ? AND status='allow'";
         } else if ("courier".equals(userType)) {
             sql = "SELECT * FROM shop_accounts WHERE email = ? AND password = ?";
         }
@@ -217,7 +217,7 @@ if ("customer".equals(userType)) {
         
             response.sendRedirect("home.jsp");
     } else {
-        out.println("<p class='error'>Invalid email or password!</p>");
+        out.println("<p class='error'>Invalid email or password Or You Have Suspended!</p>");
     }
 
     }

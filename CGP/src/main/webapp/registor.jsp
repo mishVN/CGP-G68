@@ -259,13 +259,15 @@ function validateForm(form) {
                     PreparedStatement pstmt;
                     
                     if (userType.equals("customer")) {
-                        insertQuery = "INSERT INTO user_account (user_name, email, user_address, user_phonenumber, password) VALUES (?, ?, ?, ?, ?)";
+                        insertQuery = "INSERT INTO user_account (user_name, email, user_address, user_phonenumber, password,status) VALUES (?, ?, ?, ?, ?, 'allow')";
                         pstmt = conn.prepareStatement(insertQuery);
                         pstmt.setString(1, request.getParameter("fullname"));
                         pstmt.setString(2, email);
                         pstmt.setString(3, request.getParameter("address"));
                         pstmt.setString(4, request.getParameter("phone"));
                         pstmt.setString(5, password);
+                        
+                        
                     } else {
                         insertQuery = "INSERT INTO shop_accounts (shop_ownername, shop_name, email, shop_phonenumber, shop_address, password) VALUES (?, ?, ?, ?, ?, ?)";
                         pstmt = conn.prepareStatement(insertQuery);

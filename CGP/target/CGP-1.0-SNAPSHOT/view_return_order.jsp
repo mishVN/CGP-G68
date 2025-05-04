@@ -188,7 +188,7 @@
                 <td><%= total %></td>
                 <td><%= contact %></td>
                 <td><%= status %></td>
-                <td><button class="btn" onclick="updateAndSend(<%= orderId %>, '<%= subject.replace("'", "\\'") %>', '<%= message.replace("'", "\\'") %>')">Conform Return</button></td>
+                <td><button class="btn" onclick="updateAndSend(<%= orderId %>, '<%= subject.replace("'", "\\'") %>', '<%= message.replace("'", "\\'") %>')">Confirm Return</button></td>
             </tr>
             <%
                     }

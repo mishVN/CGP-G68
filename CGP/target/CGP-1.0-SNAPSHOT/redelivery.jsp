@@ -135,7 +135,7 @@
             <form method="post" style="margin:0;">
                 <input type="hidden" name="action" value="returnOrder">
                 <input type="hidden" name="orderId" value="<%= rs.getInt("oder_id") %>">
-                <button type="submit">Return</button>
+                <button type="submit">Redelivery</button>
             </form>
         </td>
     </tr>
